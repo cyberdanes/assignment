@@ -1,0 +1,112 @@
+#%RAML 1.0
+title: Project REST API
+version: v1
+protocols: [ HTTP, HTTPS ] 
+
+types:
+  Customer: !include datatypes/customer.raml
+  CustomerNoId: !include datatypes/customerNoId.raml
+
+/customers:
+  get:
+    description: Retrieves all customers present in the system.
+    headers:
+      Requester-ID:
+        description: id of the requesting client
+        required: true
+    responses:
+      400:
+        body:
+          application/json:
+            example: {
+              "message": "Error retrieving data from the customer database."
+            }
+      200:
+        description: Returns an array of customer objects in JSON
+        body:
+          application/json:
+            type: Customer[]
+            example:  !include examples/customersExample.raml
+  
+  post:
+    description: Creates new customers from the customer object in request.
+    headers:
+        Requester-ID:
+          description: id of the requesting client
+          required: true
+    body:
+      application/json:
+        description: Payload should be a customer object with all fields present.
+        type: CustomerNoId
+        example: !include examples/customerExampleNoId.raml
+    responses:
+      400:
+        body:
+          application/json:
+             example: {
+               "message": "Error creating customer. Please check the request and make sure it is valid."
+             }
+      201:
+        body:
+          application/json:
+            example: {
+              "message": "Customer created."
+            }
+
+  /{id}:
+    get:
+      headers:
+        Requester-ID:
+          description: id of the requesting client
+          required: true
+      description: Retrieve a customer by the customer id
+      responses:
+        200:
+          body:
+            application/json:
+              type: Customer
+              example: !include examples/customerExample.raml
+        404:
+          body:
+            application/json:
+              example: {
+              "message": "Error occured. Customer not found."
+            }
+    put:
+      headers:
+        Requester-ID:
+          description: id of the requesting client
+          required: true
+      description: Update a customer by id
+      body:
+        application/json:
+          type: Customer
+          example: !include examples/customerExample.raml
+      responses:
+        200:
+          body:
+            application/json:
+              type: Customer
+              example: !include examples/customerExample.raml
+        404:
+          body:
+            application/json:
+              example: {
+              "message": "Error occured. Customer not found."
+            }
+    delete:
+      headers:
+        Requester-ID:
+          description: id of the requesting client
+          required: true
+      description: Delete a customer by id
+      responses:
+        204:
+        404:
+          body:
+            application/json:
+              example: {
+              "message": "Error occured. Customer not found."
+            }
+    
+  
